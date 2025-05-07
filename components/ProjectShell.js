@@ -1,0 +1,143 @@
+import React from 'react';
+import {
+  Box,
+  Button,
+  Flex,
+  Link,
+  Avatar,
+  Container,
+  useColorModeValue,
+  HStack,
+  Text,
+  Icon
+} from '@chakra-ui/react';
+import { useAuth } from '@/lib/auth';
+import NextLink from 'next/link';
+import { Github as GitHub, LogOut, ArrowLeft } from 'lucide-react';
+
+const ProjectShell = ({ children }) => {
+  const { user, signout } = useAuth();
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.100', 'gray.700');
+  const headerShadow = useColorModeValue('sm', 'none');
+
+  return (
+    <Box 
+      backgroundColor="gray.50" 
+      minH="100vh"
+      pb={8}
+    >
+      <Box 
+        as="header" 
+        backgroundColor={bgColor} 
+        boxShadow={headerShadow} 
+        borderBottom="1px" 
+        borderColor={borderColor}
+        position="sticky"
+        top="0"
+        zIndex="sticky"
+        width="100%"
+      >
+        <Container maxW="1280px" py={4}>
+          <Flex 
+            alignItems="center" 
+            justifyContent="space-between"
+          >
+            <Flex alignItems="center">
+              <NextLink href="/dashboard" passHref>
+                <Link 
+                  mr={4} 
+                  display="flex" 
+                  alignItems="center"
+                  fontWeight="bold"
+                  fontSize="xl"
+                  color="teal.600"
+                  _hover={{ textDecoration: 'none', color: 'teal.500' }}
+                  transition="color 0.2s"
+                >
+                  <Text 
+                    bgGradient="linear(to-r, teal.500, teal.300)" 
+                    bgClip="text"
+                    fontWeight="extrabold"
+                  >
+                    CarbonScope
+                  </Text>
+                </Link>
+              </NextLink>
+            </Flex>
+            
+            <HStack spacing={4} alignItems="center">
+              <NextLink href="/dashboard" passHref>
+                <Button
+                  variant="ghost"
+                  colorScheme="gray"
+                  size="sm"
+                  leftIcon={<Icon as={ArrowLeft} size={16} />}
+                  _hover={{
+                    bg: 'gray.100'
+                  }}
+                >
+                  Back to Projects
+                </Button>
+              </NextLink>
+              
+              <Button 
+                as="a" 
+                href="/api/github/login" 
+                colorScheme="teal"
+                variant="outline"
+                leftIcon={<Icon as={GitHub} />}
+                size="sm"
+                _hover={{
+                  transform: 'translateY(-1px)',
+                  boxShadow: 'sm'
+                }}
+                transition="all 0.2s"
+              >
+                Connect GitHub
+              </Button>
+              
+              {user && (
+                <HStack spacing={3}>
+                  <Button 
+                    variant="ghost" 
+                    colorScheme="gray" 
+                    size="sm"
+                    leftIcon={<Icon as={LogOut} size={16} />}
+                    onClick={() => signout()}
+                    _hover={{
+                      bg: 'red.50',
+                      color: 'red.600'
+                    }}
+                  >
+                    Log Out
+                  </Button>
+                  
+                  <Avatar 
+                    size="sm" 
+                    src={user?.photoUrl} 
+                    name={user?.name || 'User'}
+                    borderWidth="2px"
+                    borderColor="teal.400"
+                    showBorder
+                  />
+                </HStack>
+              )}
+            </HStack>
+          </Flex>
+        </Container>
+      </Box>
+      
+      <Container maxW="1280px" pt={8} px={4}>
+        <Box
+          borderRadius="lg"
+          transition="all 0.2s"
+        >
+          {children}
+        </Box>
+      </Container>
+    </Box>
+  );
+};
+
+export default ProjectShell;
