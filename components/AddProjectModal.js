@@ -30,6 +30,7 @@ import { mutate } from 'swr';
 import { createProject, updateProject } from '@/lib/db';
 import { useAuth } from '@/lib/auth';
 import { Github as GitHub, FileText, Type, Plus } from 'lucide-react';
+import axios from 'axios';
 
 const AddProjectModal = ({ children }) => {
   const initialRef = useRef();
@@ -41,18 +42,18 @@ const AddProjectModal = ({ children }) => {
   async function onCreateProject({ name, desc, github }) {
     try {
       const repo = github.split('github.com/')[1].split('/');
-      
+
       const res = await fetch(`https://api.github.com/repos/${repo[0]}/${repo[1]}/languages`, {
         headers: {
           'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`,
           'X-GitHub-Api-Version': '2022-11-28'
         }
       });
-      
+
       if (!res.ok) {
         throw new Error('Failed to fetch repository data');
       }
-      
+
       const data = await res.json();
 
       // calculate the total number of lines of code
@@ -78,7 +79,7 @@ const AddProjectModal = ({ children }) => {
       };
 
       const { id } = await createProject(newProject);
-      getOpenAidata(newProject, desc, id);
+      getnlpDomain(newProject, desc, id);
     } catch (error) {
       toast({
         title: 'Error',
@@ -102,10 +103,10 @@ const AddProjectModal = ({ children }) => {
         prompt: `AI/ML, Blockchain, Web Development, App Development, Command Line App. From these given options choose what suits best for the below description of project.I want the answer in only one word and it should be from given options only. Options are : AI/ML, Blockchain, Web Development, App Development, Command Line App :  ${desc}`,
         max_tokens: 256,
       });
-      
+
       const domain = response.data.choices[0].text.trim();
       await updateProject(id, { domain });
-      
+
       mutate(
         '/api/projects',
         async (data) => ({
@@ -113,7 +114,7 @@ const AddProjectModal = ({ children }) => {
         }),
         false
       );
-      
+
       onClose();
       toast({
         title: 'Success!',
@@ -131,7 +132,7 @@ const AddProjectModal = ({ children }) => {
         duration: 5000,
         isClosable: true,
       });
-      
+
       onClose();
       mutate(
         '/api/projects',
@@ -142,6 +143,63 @@ const AddProjectModal = ({ children }) => {
       );
     }
   }
+
+
+  async function getnlpDomain(newProject, desc, id) {
+    try {
+      // Send description to the local NLP server
+      const response = await axios.post('http://localhost:5001/classify', {
+        description: desc,
+      });
+
+      // Extract domain from the response
+      const domain = response.data.domain;
+
+      console.log(domain)
+
+      // Update the project with the domain
+      await updateProject(id, { domain });
+
+      // Update the global project state
+      mutate(
+        '/api/projects',
+        async (data) => ({
+          projects: [{ id, ...newProject, domain }, ...(data?.projects || [])],
+        }),
+        false
+      );
+
+      // Show success toast
+      toast({
+        title: 'Success!',
+        description: "We've added your project.",
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    } catch (error) {
+      // Show error toast if classification fails
+      toast({
+        title: 'Error classifying project',
+        description: "We added your project but couldn't determine its domain.",
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      // Close modal and update project with "Unclassified" domain
+      onClose();
+      mutate(
+        '/api/projects',
+        async (data) => ({
+          projects: [{ id, ...newProject, domain: "Unclassified" }, ...(data?.projects || [])],
+        }),
+        false
+      );
+    }
+  }
+
 
   return (
     <>
@@ -159,20 +217,20 @@ const AddProjectModal = ({ children }) => {
       >
         {children}
       </Button>
-      
+
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size="md">
-        <ModalOverlay 
-          bg="blackAlpha.300" 
+        <ModalOverlay
+          bg="blackAlpha.300"
           backdropFilter="blur(5px)"
         />
-        <ModalContent 
-          as="form" 
+        <ModalContent
+          as="form"
           onSubmit={handleSubmit(onCreateProject)}
           borderRadius="xl"
           boxShadow="xl"
         >
-          <ModalHeader 
-            fontWeight="bold" 
+          <ModalHeader
+            fontWeight="bold"
             borderBottomWidth="1px"
             borderColor="gray.100"
             pb={4}
@@ -183,12 +241,12 @@ const AddProjectModal = ({ children }) => {
             </HStack>
           </ModalHeader>
           <ModalCloseButton />
-          
+
           <ModalBody pb={6}>
             <VStack spacing={5} align="start">
               <FormControl>
-                <FormLabel 
-                  fontWeight="medium" 
+                <FormLabel
+                  fontWeight="medium"
                   color="gray.700"
                   display="flex"
                   alignItems="center"
@@ -209,8 +267,8 @@ const AddProjectModal = ({ children }) => {
               </FormControl>
 
               <FormControl>
-                <FormLabel 
-                  fontWeight="medium" 
+                <FormLabel
+                  fontWeight="medium"
                   color="gray.700"
                   display="flex"
                   alignItems="center"
@@ -232,8 +290,8 @@ const AddProjectModal = ({ children }) => {
               </FormControl>
 
               <FormControl>
-                <FormLabel 
-                  fontWeight="medium" 
+                <FormLabel
+                  fontWeight="medium"
                   color="gray.700"
                   display="flex"
                   alignItems="center"
@@ -247,7 +305,7 @@ const AddProjectModal = ({ children }) => {
                   </InputLeftElement>
                   <Input
                     placeholder="https://github.com/username/repo"
-                    {...register('github', { 
+                    {...register('github', {
                       required: true,
                       pattern: {
                         value: /https:\/\/github\.com\/[\w-]+\/[\w-]+/,
@@ -266,14 +324,14 @@ const AddProjectModal = ({ children }) => {
             </VStack>
           </ModalBody>
 
-          <ModalFooter 
+          <ModalFooter
             borderTopWidth="1px"
             borderColor="gray.100"
             pt={4}
           >
-            <Button 
-              onClick={onClose} 
-              mr={3} 
+            <Button
+              onClick={onClose}
+              mr={3}
               fontWeight="medium"
               variant="ghost"
               _hover={{ bg: 'gray.100' }}

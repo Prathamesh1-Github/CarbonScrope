@@ -28,6 +28,7 @@ import { createProject, updateProject } from '@/lib/db';
 import { useAuth } from '@/lib/auth';
 import { mutate } from 'swr';
 import { Github as GitHub, FileText, Type } from 'lucide-react';
+import axios from 'axios';
 
 const AddProjectModalGithub = ({ isOpen, onClose, defaultValues = {} }) => {
   const initialRef = useRef();
@@ -79,7 +80,7 @@ const AddProjectModalGithub = ({ isOpen, onClose, defaultValues = {} }) => {
       };
 
       const { id } = await createProject(newProject);
-      await getOpenAiData(newProject, desc, id);
+      getnlpDomain(newProject, desc, id);
       
     } catch (error) {
       toast({
@@ -152,6 +153,61 @@ const AddProjectModalGithub = ({ isOpen, onClose, defaultValues = {} }) => {
       );
     }
   };
+
+  async function getnlpDomain(newProject, desc, id) {
+    try {
+      // Send description to the local NLP server
+      const response = await axios.post('http://localhost:5001/classify', {
+        description: desc,
+      });
+
+      // Extract domain from the response
+      const domain = response.data.domain;
+
+      console.log(domain)
+
+      // Update the project with the domain
+      await updateProject(id, { domain });
+
+      // Update the global project state
+      mutate(
+        '/api/projects',
+        async (data) => ({
+          projects: [{ id, ...newProject, domain }, ...(data?.projects || [])],
+        }),
+        false
+      );
+
+      // Show success toast
+      toast({
+        title: 'Success!',
+        description: "We've added your project.",
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    } catch (error) {
+      // Show error toast if classification fails
+      toast({
+        title: 'Error classifying project',
+        description: "We added your project but couldn't determine its domain.",
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      // Close modal and update project with "Unclassified" domain
+      onClose();
+      mutate(
+        '/api/projects',
+        async (data) => ({
+          projects: [{ id, ...newProject, domain: "Unclassified" }, ...(data?.projects || [])],
+        }),
+        false
+      );
+    }
+  }
 
   return (
     <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size="md">

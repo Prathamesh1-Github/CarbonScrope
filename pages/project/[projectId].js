@@ -15,8 +15,13 @@ import Suggestion from '../rules/Suggestion.json'
 import { updateProjectByGithub } from "@/lib/db";
 import ProjectShell from "@/components/ProjectShell";
 
+import CustomChatbot from "@/components/chatbot/CustomChatbot";
+
+let globalProjectId;
+
 export async function getStaticProps(context) {
     const projectId = context.params.projectId;
+    globalProjectId = projectId;
     const project = await getProjectById(projectId);
     return {
         props: {
@@ -129,7 +134,7 @@ const AnalysisPage = ({ project }) => {
         let totalE = 0;
         let totalT = 0;
         let totalM = 0;
-        
+
         Object.keys(project.languages_used).forEach((key) => {
             if (e[key.toLowerCase()] != undefined && t[key.toLowerCase()] != undefined & m[key.toLowerCase()] != undefined) {
                 e[key.toLowerCase().concat('Percent')] = (e[key.toLowerCase()] * project.languages_used[key] / 100.0).toFixed(2);
@@ -140,7 +145,7 @@ const AnalysisPage = ({ project }) => {
                 totalM += parseFloat(m[key.toLowerCase().concat('Percent')]);
             }
         });
-        
+
         e['total'] = totalE;
         t['total'] = totalT;
         m['total'] = totalM;
@@ -156,7 +161,7 @@ const AnalysisPage = ({ project }) => {
                 });
             }
         });
-        
+
         Object.keys(newSuggestions).forEach((key) => {
             processSuggestionEnergy({ language: newSuggestions[key] }, Energy.decisions);
             processSuggestionTime({ language: newSuggestions[key] }, Time.decisions);
@@ -171,7 +176,7 @@ const AnalysisPage = ({ project }) => {
             carbon_footprint: cf,
             suggestions: newSuggestions,
         });
-        
+
         setCalculationDone(true);
         setIsLoading(false);
         toast({
@@ -187,7 +192,7 @@ const AnalysisPage = ({ project }) => {
         let totalE = 0;
         let totalT = 0;
         let totalM = 0;
-        
+
         Object.keys(suggestions).forEach((key) => {
             es[suggestions[key].concat('Percent')] = (es[suggestions[key]] * project.languages_used[key] / 100.0).toFixed(2);
             ts[suggestions[key].concat('Percent')] = (ts[suggestions[key]] * project.languages_used[key] / 100.0).toFixed(2);
@@ -196,7 +201,7 @@ const AnalysisPage = ({ project }) => {
             totalT += parseFloat(ts[suggestions[key].concat('Percent')]);
             totalM += parseFloat(ms[suggestions[key].concat('Percent')]);
         });
-        
+
         es['total'] = totalE;
         ts['total'] = totalT;
         ms['total'] = totalM;
@@ -208,7 +213,7 @@ const AnalysisPage = ({ project }) => {
             suggestion_memory: ms,
             suggestion_carbon_footprint: cfs
         });
-        
+
         setSuggestionDone(true);
         setIsLoading(false);
         toast({
@@ -255,10 +260,10 @@ const AnalysisPage = ({ project }) => {
                             </Text>
                             <Flex alignItems="center" mb={4}>
                                 <GitHubIcon size="20px" color="gray.700" mr={2} />
-                                <Link 
-                                    href={project.github} 
-                                    color="blue.600" 
-                                    _hover={{ color: "blue.800" }} 
+                                <Link
+                                    href={project.github}
+                                    color="blue.600"
+                                    _hover={{ color: "blue.800" }}
                                     isExternal
                                 >
                                     {project.github}
@@ -268,11 +273,11 @@ const AnalysisPage = ({ project }) => {
                                 <Text fontSize="sm" fontWeight="medium" color="gray.700" mb={2}>Current Technologies</Text>
                                 <Flex flexWrap="wrap" gap={2}>
                                     {Object.keys(project.languages_used).map((key) => (
-                                        <Badge 
-                                            key={key} 
-                                            px={3} 
-                                            py={1} 
-                                            borderRadius="full" 
+                                        <Badge
+                                            key={key}
+                                            px={3}
+                                            py={1}
+                                            borderRadius="full"
                                             colorScheme="green"
                                         >
                                             {key} ({project.languages_used[key]}%)
@@ -281,9 +286,9 @@ const AnalysisPage = ({ project }) => {
                                 </Flex>
                             </Box>
                         </Box>
-                        
+
                         <Flex flexWrap="wrap" gap={3}>
-                            <Button 
+                            <Button
                                 onClick={calcPercentandTotal}
                                 isLoading={isLoading && !calculationDone}
                                 loadingText="Calculating..."
@@ -292,8 +297,8 @@ const AnalysisPage = ({ project }) => {
                             >
                                 Calculate Impact
                             </Button>
-                            
-                            <Button 
+
+                            <Button
                                 onClick={handleSubmission}
                                 isLoading={isLoading && calculationDone}
                                 loadingText="Processing..."
@@ -325,7 +330,7 @@ const AnalysisPage = ({ project }) => {
                                         </Stat>
                                     </Box>
                                 </GridItem>
-                                
+
                                 <GridItem>
                                     <Box bg="white" borderRadius="lg" boxShadow="md" p={6} transition="all 0.3s" _hover={{ boxShadow: "lg" }}>
                                         <Flex alignItems="center" mb={3}>
@@ -340,7 +345,7 @@ const AnalysisPage = ({ project }) => {
                                         </Stat>
                                     </Box>
                                 </GridItem>
-                                
+
                                 <GridItem>
                                     <Box bg="white" borderRadius="lg" boxShadow="md" p={6} transition="all 0.3s" _hover={{ boxShadow: "lg" }}>
                                         <Flex alignItems="center" mb={3}>
@@ -374,7 +379,7 @@ const AnalysisPage = ({ project }) => {
                                     ))}
                                 </Flex>
                             </Box>
-                            
+
                             {suggestionDone && project?.suggestion_energy && project?.suggestion_time && project?.suggestion_memory && (
                                 <>
                                     {/* Improved Metrics */}
@@ -400,7 +405,7 @@ const AnalysisPage = ({ project }) => {
                                                 </Stat>
                                             </Box>
                                         </GridItem>
-                                        
+
                                         <GridItem>
                                             <Box bg="white" borderRadius="lg" boxShadow="md" p={6} transition="all 0.3s" _hover={{ boxShadow: "lg" }}>
                                                 <Flex alignItems="center" mb={3}>
@@ -421,7 +426,7 @@ const AnalysisPage = ({ project }) => {
                                                 </Stat>
                                             </Box>
                                         </GridItem>
-                                        
+
                                         <GridItem>
                                             <Box bg="white" borderRadius="lg" boxShadow="md" p={6} transition="all 0.3s" _hover={{ boxShadow: "lg" }}>
                                                 <Flex alignItems="center" mb={3}>
@@ -447,7 +452,7 @@ const AnalysisPage = ({ project }) => {
                                     {/* Carbon Footprint Comparison */}
                                     <Box bg="white" borderRadius="lg" boxShadow="md" p={6} mb={6}>
                                         <Heading as="h2" size="md" color="gray.800" mb={4}>Carbon Emission Impact</Heading>
-                                        
+
                                         <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
                                             <GridItem>
                                                 <Box p={4} borderWidth="1px" borderColor="gray.200" borderRadius="lg">
@@ -461,7 +466,7 @@ const AnalysisPage = ({ project }) => {
                                                     </Alert>
                                                 </Box>
                                             </GridItem>
-                                            
+
                                             <GridItem>
                                                 <Box p={4} borderWidth="1px" borderColor="gray.200" borderRadius="lg">
                                                     <Heading as="h3" size="sm" fontWeight="medium" color="gray.700" mb={2}>Projected Carbon Emission</Heading>
@@ -475,7 +480,7 @@ const AnalysisPage = ({ project }) => {
                                                 </Box>
                                             </GridItem>
                                         </Grid>
-                                        
+
                                         <Progress value={77} size="sm" colorScheme="green" mt={6} borderRadius="full" />
                                         <Text fontSize="sm" color="gray.600" mt={2}>
                                             Implementing suggested changes could reduce your carbon footprint by approximately {Math.abs(Number(percentageChange()))}%
@@ -483,23 +488,23 @@ const AnalysisPage = ({ project }) => {
                                     </Box>
                                 </>
                             )}
-                            
+
                             {/* Visualization Section */}
                             <Box bg="white" borderRadius="lg" boxShadow="md" p={6} mb={6} textAlign="center">
                                 <Heading as="h2" size="md" color="gray.800" mb={3}>Visualization</Heading>
                                 <Text color="gray.600" mb={4}>Download the report data to visualize in Power BI</Text>
-                                
-                                <Button 
-                                    as="a" 
-                                    href="/analysis.xlsx" 
-                                    download 
-                                    colorScheme="blue" 
-                                    variant="outline" 
+
+                                <Button
+                                    as="a"
+                                    href="/analysis.xlsx"
+                                    download
+                                    colorScheme="blue"
+                                    variant="outline"
                                     leftIcon={<Download size="16px" />}
                                 >
                                     Download Report Data
                                 </Button>
-                                
+
                                 <Box mt={8} p={4} borderWidth="1px" borderColor="gray.200" borderRadius="lg">
                                     <Flex alignItems="center" justifyContent="center">
                                         <BarChart size="32px" color="gray.400" />
@@ -511,11 +516,11 @@ const AnalysisPage = ({ project }) => {
                             {/* Power BI Embed */}
                             <Box bg="white" borderRadius="lg" boxShadow="md" p={6} textAlign="center">
                                 <Heading as="h2" size="md" color="gray.800" mb={3}>Power BI Embed</Heading>
-                                <iframe 
-                                    title="TestData4BI" 
-                                    width="100%" 
-                                    height="600px" 
-                                    src="https://app.powerbi.com/reportEmbed?reportId=b4170a61-6a51-41fc-949d-eeec23246a2f&autoAuth=true&ctid=6db5d98c-f3ca-4bde-a6b4-6013a4ebc94a" 
+                                <iframe
+                                    title="TestData4BI"
+                                    width="100%"
+                                    height="600px"
+                                    src="https://app.powerbi.com/reportEmbed?reportId=b4170a61-6a51-41fc-949d-eeec23246a2f&autoAuth=true&ctid=6db5d98c-f3ca-4bde-a6b4-6013a4ebc94a"
                                     frameBorder="0"
                                     allowFullScreen
                                 ></iframe>
@@ -523,6 +528,12 @@ const AnalysisPage = ({ project }) => {
                         </>
                     )}
                 </Box>
+            </Box>
+            <Box mt={10}>
+                <Heading size="md" mb={3}>
+                    Ask AI about this Project
+                </Heading>
+                <CustomChatbot projectId={globalProjectId} />
             </Box>
         </ProjectShell>
     );

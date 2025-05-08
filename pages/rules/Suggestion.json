@@ -103,5 +103,82 @@
         "App Development": "java",
         "Web Development": "perl",
         "Command Line App": "c"
+    },
+    "kotlin": {
+        "AI/ML": "java",
+        "Blockchain": "rust",
+        "App Development": "kotlin",
+        "Web Development": "javascript",
+        "Command Line App": "c"
+    },
+    "r": {
+        "AI/ML": "r",
+        "Blockchain": "rust",
+        "App Development": "python",
+        "Web Development": "javascript",
+        "Command Line App": "c"
+    },
+    "scala": {
+        "AI/ML": "scala",
+        "Blockchain": "rust",
+        "App Development": "java",
+        "Web Development": "scala",
+        "Command Line App": "c"
+    },
+    "haskell": {
+        "AI/ML": "haskell",
+        "Blockchain": "rust",
+        "App Development": "haskell",
+        "Web Development": "haskell",
+        "Command Line App": "c"
+    },
+    "lua": {
+        "AI/ML": "python",
+        "Blockchain": "rust",
+        "App Development": "lua",
+        "Web Development": "lua",
+        "Command Line App": "c"
+    },
+    "elixir": {
+        "AI/ML": "elixir",
+        "Blockchain": "rust",
+        "App Development": "elixir",
+        "Web Development": "elixir",
+        "Command Line App": "c"
+    },
+    "clojure": {
+        "AI/ML": "clojure",
+        "Blockchain": "rust",
+        "App Development": "java",
+        "Web Development": "clojure",
+        "Command Line App": "c"
+    },
+    "shell": {
+        "AI/ML": "python",
+        "Blockchain": "rust",
+        "App Development": "shell",
+        "Web Development": "shell",
+        "Command Line App": "shell"
+    },
+    "html": {
+        "AI/ML": "javascript",
+        "Blockchain": "javascript",
+        "App Development": "html",
+        "Web Development": "html",
+        "Command Line App": "shell"
+    },
+    "css": {
+        "AI/ML": "javascript",
+        "Blockchain": "javascript",
+        "App Development": "css",
+        "Web Development": "css",
+        "Command Line App": "shell"
+    },
+    "sql": {
+        "AI/ML": "python",
+        "Blockchain": "rust",
+        "App Development": "java",
+        "Web Development": "sql",
+        "Command Line App": "c"
     }
 }

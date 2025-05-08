@@ -216,6 +216,171 @@
 				"type": "65.69",
 				"params": {}
 			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "kotlin"
+					}
+				]
+			},
+			"event": {
+				"type": "4.00",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "r"
+					}
+				]
+			},
+			"event": {
+				"type": "45.00",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "scala"
+					}
+				]
+			},
+			"event": {
+				"type": "6.00",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "haskell"
+					}
+				]
+			},
+			"event": {
+				"type": "4.80",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "lua"
+					}
+				]
+			},
+			"event": {
+				"type": "2.00",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "elixir"
+					}
+				]
+			},
+			"event": {
+				"type": "4.10",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "clojure"
+					}
+				]
+			},
+			"event": {
+				"type": "5.20",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "shell"
+					}
+				]
+			},
+			"event": {
+				"type": "1.50",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "html"
+					}
+				]
+			},
+			"event": {
+				"type": "0.70",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "css"
+					}
+				]
+			},
+			"event": {
+				"type": "0.80",
+				"params": {}
+			}
+		},
+		{
+			"conditions": {
+				"all": [
+					{
+						"fact": "language",
+						"operator": "equal",
+						"value": "sql"
+					}
+				]
+			},
+			"event": {
+				"type": "1.20",
+				"params": {}
+			}
 		}
 	]
 }
